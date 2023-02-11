@@ -75,6 +75,7 @@ jobs:
          $(streamlink --force --hls-duration 00:00:15 --output "CNNPORTUGAL.ts" https://tviplayer.iol.pt/direto/CNN best best)
          
 
+
       - name: Get BBMEXICOUSA.ts
         run: |
          touch ./BBMEXICOUSA.ts
