@@ -1,16 +1,18 @@
-name: STREAMLINK LIVE
+# This is a basic workflow to help you get started with Actions
+
+name: M3U generator
 
 # Controls when the action will run. 
 on:
   schedule:
     - cron: "*/41 * * * *"
-
-  
-  
-  push:
+    
+  pull_request:
     branches:
-    - master
-    - main
+      - main
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -21,31 +23,19 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository using a token
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-        with:
-          ref: ${{github.ref}}
-          token: ${{secrets.GITHUB_TOKEN}}
-      
-      # Configure Git
-      - name: Configure Git
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      #- name: Run a one-line script
+      #  run: echo testing!
+
+      # Runs a set of commands using the runners shell 
+      - name: config
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --global user.email "vijayelectro2002@gmail.com"
+          git config --global user.name "vijay6672"
       
-      # Installing yt-dlp
-      - name: Install yt-dlp
-        run: |
-          wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -O /usr/local/bin/yt-dlp
-          chmod a+rx /usr/local/bin/yt-dlp
-      
-      # Installing youtube-dl
-      - name: Install youtube-dl
-        run: |
-          wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
-          chmod a+rx /usr/local/bin/youtube-dl    
-          youtube-dl -U
       
       # Installing streamlink
       - name: Install streamlink
@@ -84,32 +74,14 @@ jobs:
          $(streamlink --force --hls-duration 00:00:15 --output "GRAVADOS/$(date +%d%m)_$(date +%H%M%S)_BBMEXICOUSA_-$(date +%Y).ts" https://www.youtube.com/@TelemundoEntretenimiento/live best)
          $(streamlink --force --hls-duration 00:00:15 --output "GRAVADOS/$(date +%d%m)_$(date +%H%M%S)_CBSNEWS_-$(date +%Y).ts" https://www.cbsnews.com/live/ best)
          $(streamlink --force --hls-duration 00:00:15 --output "GRAVADOS/CNNPORTUGAL.ts" https://tviplayer.iol.pt/direto/CNN best best)         
- 
- 
-
-
-      
-      - name: Get LISTA4.m3u8
-        run: |
-         touch ./lista2str.m3u
-         sudo cat >./lista2str.m3u <<EOL      
-         
-         
-         #EXTM3U
-         #EXT-X-VERSION:3
-         #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=2560000
-         #EXTINF:-1 tvg-id="$(yt-dlp --get-title https://www.youtube.com/watch?v=EeQnkxY9QFs)" group-title="Reality Show'S Live" group-title="CNN's" tvg-logo="$(yt-dlp --get-thumbnail https://www.youtube.com/watch?v=EeQnkxY9QFs)", YOUTUBEAOVIVO - $(yt-dlp --get-title https://www.youtube.com/watch?v=EeQnkxY9QFs)
-         $(streamlink --url --default-stream  --stream-url  https://www.youtube.com/@TelemundoEntretenimiento/live best)
-         
-         
-      
-      - name: Add Changes to Git
+        
+      - name: git add
         run: |
           git add -A
           ls -la 
           
-      # Commit and Push changes
-      - name: Commit & Push
+      - name: commit & push
         run: |
-          git commit -m "links atualizados"
+          git commit -m "links are updated"
           git push
+          
